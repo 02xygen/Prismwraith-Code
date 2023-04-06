@@ -13,12 +13,15 @@ public class Launch : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        // Check if player is touching the jumpad
         if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
             Debug.Log("Launching");
+
+            // Launch player in set direction with set force amount
             Rigidbody rb = other.gameObject.GetComponent<Rigidbody>();
             rb.AddForce(booster.up * force, ForceMode.Impulse);
-            sound.Play();
+            sound.Play(); // Play jumpad sound
         }
     }
 }

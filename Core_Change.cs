@@ -12,6 +12,7 @@ public class Core_Change : MonoBehaviour
     private float lerpSpeed = 1f;
     private float lerpDuration = 1f;
 
+    // Set the starting core color to white
     void Start()
     {
         material = GetComponent<MeshRenderer>().sharedMaterial;
@@ -19,12 +20,7 @@ public class Core_Change : MonoBehaviour
         material.SetColor("_NewColor", Color.white);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    // Change the color of the core
     public void ChangeCore(Color oldColor, Color newColor)
     {
         material = GetComponent<MeshRenderer>().sharedMaterial;
@@ -32,6 +28,7 @@ public class Core_Change : MonoBehaviour
         StartCoroutine(AnimateShader(oldColor, newColor));
     }
 
+    // Animate the core's color change
     IEnumerator AnimateShader(Color oldColor, Color newColor)
     {
         float timeElapsed = 0;
@@ -41,16 +38,20 @@ public class Core_Change : MonoBehaviour
 
         while (timeElapsed < lerpDuration)
         {
+            // Cancel the shader animation if ejecting
             if(player.GetComponent<Gun_Controller>().ejecting == true)
             {
                 player.GetComponent<Gun_Controller>().ejecting = false;
                 yield return null;
             }
+
+            // Lerp the _CurrentTime shader value, and the core light color
             material.SetFloat("_CurrentTime", Mathf.Lerp(startValue, endValue, (timeElapsed / lerpDuration) * lerpSpeed));
             coreLight.color = Color.Lerp(oldColor, newColor, timeElapsed / lerpDuration);
             timeElapsed += Time.deltaTime;
             yield return null;
         }
+        // Reset the _CurrentTime shader value and set _OldColor to the new lerped color
         material.SetFloat("_CurrentTime", endValue);
         material.SetColor("_OldColor", gameObject.GetComponent<Renderer>().material.GetColor("_NewColor"));
         material.SetFloat("_CurrentTime", startValue);

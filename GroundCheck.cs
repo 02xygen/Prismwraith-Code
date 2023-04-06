@@ -6,6 +6,8 @@ public class GroundCheck : MonoBehaviour
 {
     public PlayerController playerController;
 
+    // Basic player collsion handling and ground check
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject == playerController.gameObject)

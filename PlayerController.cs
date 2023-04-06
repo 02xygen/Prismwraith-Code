@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     public float gravity;
     private float lookAngle;
 
+    // If movement input read
     public void OnMove(InputAction.CallbackContext context)
     {
         velocity = context.ReadValue<Vector2>();
@@ -33,11 +34,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // If look input read
     public void OnLook(InputAction.CallbackContext context)
     {
         look = context.ReadValue<Vector2>();
     }
 
+    // If jump input read
     public void OnJump(InputAction.CallbackContext context)
     {
         //Debug.Log("Jump");
@@ -46,7 +49,7 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.lockState = CursorLockMode.Locked; // Lock the cursor
     }
 
     private void FixedUpdate()
@@ -88,7 +91,7 @@ public class PlayerController : MonoBehaviour
     void Jump()
     {
         Vector3 jumpingForces = Vector3.zero;
-        if (grounded)
+        if (grounded) // If grounded, jump
         {
             jumpingForces = Vector3.up * jumpForce;
         }
@@ -106,12 +109,7 @@ public class PlayerController : MonoBehaviour
         lookRotation = Mathf.Clamp(lookRotation, -60, 50);
         playerHead.transform.eulerAngles = new Vector3(lookRotation, transform.eulerAngles.y, transform.eulerAngles.z);
     }
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
     void LateUpdate()
     {
         Look();

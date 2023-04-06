@@ -9,6 +9,7 @@ public class MusicTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        // If the player hits the trigger play the set music
         if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
             nondiagetic.clip = music;

@@ -17,10 +17,10 @@ public class Buildable : MonoBehaviour
     private bool isBuilt;
     private bool isBuildable;
 
-
-    // Start is called before the first frame update
+   
     void Start()
     {
+        // Initialize buildable in collasped state
         isBuilt = false;
         isBuildable = true;
         materials = GetComponent<Renderer>().materials;
@@ -31,14 +31,10 @@ public class Buildable : MonoBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    
     public void BuildOrCollapse(int colorIndex)
     {
+        // Check if collapsed object can be built using the inputed color
         if (colorIndex == colorManager.GetComponent<ColorMaterialManager>().Colorindexer(baseMat) && !isBuilt && isBuildable) 
         {
             Debug.Log("building");
@@ -46,6 +42,7 @@ public class Buildable : MonoBehaviour
             materials[1].SetColor("_Color", colorManager.GetComponent<ColorMaterialManager>().colors[colorIndex].GetColor("_OldColor"));
             StartCoroutine(Build(colorIndex));
         }
+        // Check if built objectr can be collasped using the inputed color
         else if (colorIndex == colorManager.GetComponent<ColorMaterialManager>().OppositeColor(colorManager.GetComponent<ColorMaterialManager>().Colorindexer(baseMat)) && isBuilt)
         {
             Debug.Log("Collapsing");
@@ -55,24 +52,29 @@ public class Buildable : MonoBehaviour
         }
     }
 
+    // Build object coroutine
     IEnumerator Build(int colorIndex)
     {
         float timeElapsed = 0;
+        // Animate build shader
         while (timeElapsed < lerpDuration)
         {
             materials[0].SetFloat("_CurrentTime", Mathf.Lerp(startValue, endValue, timeElapsed / lerpDuration));
             timeElapsed += Time.deltaTime;
             yield return null;
         }
+        // Set the new color via shader value, built state, and make the object collider with the player by changing layers
         materials[0].SetFloat("_CurrentTime", endValue);
         isBuilt = true;
         gameObject.layer = LayerMask.NameToLayer("Buildable");
 
     }
 
+    // Collapse object coroutine
     IEnumerator Collapse(int colorIndex)
     {
         float timeElapsed = 0;
+        // Animate build shader backwards
         while (timeElapsed < lerpDuration)
         {
             materials[0].SetFloat("_CurrentTime", Mathf.Lerp(endValue, startValue, timeElapsed / lerpDuration));
@@ -80,23 +82,29 @@ public class Buildable : MonoBehaviour
             timeElapsed += Time.deltaTime;
             yield return null;
         }
+        // Set the new color to transparent via shader value, collapsed state, remove player-object collision by changing layers
         materials[0].SetFloat("_CurrentTime", startValue);
         gameObject.layer = LayerMask.NameToLayer("Collapsed");
         isBuildable = false;
         isBuilt = false;
+        // Start build cooldown
         StartCoroutine(Cooldown());
     }
 
+    // Build cooldown coroutine
     IEnumerator Cooldown()
     {
         float timeElapsed = 0;
+        // Wait cooldown duration
         yield return new WaitForSeconds(cooldownTime);
+        // Lerp outline color from brown to the default color
         while (timeElapsed < lerpDuration)
         {
             materials[1].SetColor("_Color", Color.Lerp(colorManager.GetComponent<ColorMaterialManager>().colors[9].GetColor("_OldColor"), baseMat.GetColor("_OldColor"), timeElapsed / fastLerpDuration));
             timeElapsed += Time.deltaTime;
             yield return null;
         }
+        // Set state to buildable
         isBuildable = true;
         
     }
